@@ -1,0 +1,20 @@
+{
+  "name": "advanced-data-structures",
+  "version": "1.0.0",
+  "description": "advanced data structures implementation",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boksimamba3/advanced-data-structures.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boksimamba3/advanced-data-structures/issues"
+  },
+  "homepage": "https://github.com/boksimamba3/advanced-data-structures#readme"
+}
