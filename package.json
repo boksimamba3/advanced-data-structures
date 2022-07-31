@@ -4,7 +4,7 @@
   "description": "advanced data structures implementation",
   "main": "index.js",
   "scripts": {
-    "start": "tsc index.ts",
+    "start:heap": "ts-node heap/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
