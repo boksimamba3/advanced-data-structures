@@ -1,5 +1,24 @@
 export type Less<T> = (a: Array<T>, i: number, j: number) => boolean
 
+export class HeapIterator<T> implements Iterator<T> {
+  heap: Heap<T>
+  size: number
+
+  constructor(heap: Heap<T>) {
+    this.heap = heap
+    this.size = heap.length()
+  }
+
+  next(): IteratorResult<T> {
+    if (this.size > 0) {
+      this.size--
+      return { value: this.heap.top()!, done: false }
+    }
+
+    return { value: null, done: true }
+  }
+}
+
 export class Heap<T> {
   private h: Array<T | null>
   private size: number
@@ -11,6 +30,10 @@ export class Heap<T> {
     this.size = 0
     this.capacity = capacity
     this.less = less
+  }
+
+  length(): number {
+    return this.size
   }
 
   peak(): T | null {
@@ -80,6 +103,10 @@ export class Heap<T> {
     }
 
     return i > i0
+  }
+
+  [Symbol.iterator](): HeapIterator<T> {
+    return new HeapIterator(this)
   }
 }
 
