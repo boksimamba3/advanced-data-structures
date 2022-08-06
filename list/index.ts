@@ -89,11 +89,24 @@ export class List<T = unknown> {
     return
   }
 
+  private _move(e: Element<T>, at: Element<T>) {
+    if (e === at) {
+      return
+    }
+    e.prev!.next = e.next
+    e.next!.prev = e.prev
+
+    e.next = at.next
+    e.prev = at
+    e.prev.next = e
+    e.next!.prev = e
+  }
+
   private _insertValue(value: T, at: Element<T>): Element<T> {
     return this._insert(new Element(value), at)
   }
 
-  front() {
+  front(): Element<T> | null {
     if (this.size === 0) {
       return null
     }
@@ -101,7 +114,7 @@ export class List<T = unknown> {
     return this.root.next
   }
 
-  back() {
+  back(): Element<T> | null {
     if (this.size === 0) {
       return null
     }
@@ -141,9 +154,35 @@ export class List<T = unknown> {
     return e.value!
   }
 
+  moveToFront(e: Element<T>) {
+    if (this !== e.list || this.root.next === e) {
+      return
+    }
+    this._move(e, this.root)
+  }
+
+  moveToBack(e: Element<T>) {
+    if (this !== e.list || this.root.prev === e) {
+      return
+    }
+    this._move(e, this.root.prev!)
+  }
+
+  moveBefore(e: Element<T>, mark: Element<T>) {
+    if (this !== e.list || e === mark || this !== mark.list) {
+      return
+    }
+    this._move(e, mark.prev!)
+  }
+
+  moveAfter(e: Element<T>, mark: Element<T>) {
+    if (this !== e.list || e === mark || this !== mark.list) {
+      return
+    }
+    this._move(e, mark)
+  }
+
   [Symbol.iterator](): ListIterator<T> {
     return new ListIterator(this)
   }
 }
-
-const list = new List<number>()
