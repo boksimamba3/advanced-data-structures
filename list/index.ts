@@ -30,7 +30,7 @@ export class Element<T = unknown> {
   }
 }
 
-export class ListIterator<T> implements Iterator<Element<T>> {
+export class ListIterator<T> implements Iterator<T> {
   list: List<T>
   current: Element<T> | null
 
@@ -39,7 +39,7 @@ export class ListIterator<T> implements Iterator<Element<T>> {
     this.current = list.front()
   }
 
-  next(): IteratorResult<Element<T>> {
+  next(): IteratorResult<T> {
     const e = this.current
 
     if (e === null) {
@@ -48,11 +48,11 @@ export class ListIterator<T> implements Iterator<Element<T>> {
 
     this.current = e.getNext()
 
-    return { value: e, done: false }
+    return { value: e.value!, done: false }
   }
 }
 
-export class List<T = unknown> {
+export class List<T = unknown> implements Iterable<T> {
   root: Element<T>
   size: number
 

@@ -19,7 +19,7 @@ export class HeapIterator<T> implements Iterator<T> {
   }
 }
 
-export class Heap<T> {
+export class Heap<T> implements Iterable<T> {
   private h: Array<T | null>
   private size: number
   private capacity: number
