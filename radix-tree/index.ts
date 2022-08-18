@@ -126,10 +126,9 @@ export class RadixTree<TValue> {
       parent.updateEdge(search.charAt(0), child)
 
       const e = new RadixEdge()
-      e.label = n.prefix[commonPrefix]
+      e.label = n.prefix.charAt(commonPrefix)
       e.node = n
       child.addEdge(e)
-
       n.prefix = n.prefix.slice(commonPrefix)
 
       // Create new leaf node
@@ -198,8 +197,11 @@ export class RadixTree<TValue> {
 }
 
 const radix = new RadixTree()
-radix.put('Boris', 10)
-radix.put('Bos', 5)
+radix.put('Java', 10)
+radix.put('JavaScript', 5)
+radix.put('Jane', 3)
 //console.log(JSON.stringify(radix, null, 2))
-
-console.log(radix.get('Bo'))
+console.log(radix.get('Jane'))
+console.log(radix.get('JavaScript'))
+console.log(radix.get('Java'))
+console.log(radix.get('Ja'))
