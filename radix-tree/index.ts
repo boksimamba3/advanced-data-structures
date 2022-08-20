@@ -66,6 +66,14 @@ export class RadixNode<TValue = any> {
       this.edges = [...this.edges.slice(0, idx), ...this.edges.slice(idx + 1)]
     }
   }
+
+  mergeChild() {
+    const e = this.edges[0]
+    const child = e.node
+    this.prefix = this.prefix + child!.prefix
+    this.leaf = child!.leaf
+    this.edges = child!.edges
+  }
 }
 
 export class RadixTree<TValue> {
@@ -82,7 +90,7 @@ export class RadixTree<TValue> {
   }
 
   put(key: string, value: TValue): this {
-    let parent: RadixNode | null
+    let parent: RadixNode | null = null
     let n: RadixNode | null = this.root
     let search = key
     for (;;) {
@@ -182,10 +190,60 @@ export class RadixTree<TValue> {
     return null
   }
 
-  delete(key: string): boolean {
-    throw new Error('Method not implemented.')
+  delete(key: string): TValue | null {
+    let parent: RadixNode | null = null
+    let n: RadixNode | null = this.root
+    let search = key
+    let label = ''
+
+    for (;;) {
+      if (search.length === 0) {
+        if (!n.isLeaf()) {
+          break
+        }
+        /* Delete leaf */
+        const leaf = n.leaf
+        n.leaf = null
+        this.size--
+
+        if (parent !== null && n.edges.length === 0) {
+          parent.deleteEdge(label)
+        }
+
+        if (n !== this.root && n.edges.length === 1) {
+          n.mergeChild()
+        }
+
+        if (
+          parent !== null &&
+          parent !== this.root &&
+          parent.edges.length === 1 &&
+          !parent.isLeaf()
+        ) {
+          parent.mergeChild()
+        }
+
+        return leaf?.value
+      }
+
+      parent = n
+      label = search.charAt(0)
+      n = n!.getEdge(label)
+      if (n === null) {
+        break
+      }
+
+      if (hasPrefix(search, n.prefix)) {
+        search = search.slice(n.prefix.length)
+      } else {
+        break
+      }
+    }
+
+    return null
   }
-  contains(key: string): boolean {
+
+  has(key: string): boolean {
     throw new Error('Method not implemented.')
   }
   longestPrefix(key: string): string {
@@ -200,8 +258,12 @@ const radix = new RadixTree()
 radix.put('Java', 10)
 radix.put('JavaScript', 5)
 radix.put('Jane', 3)
-//console.log(JSON.stringify(radix, null, 2))
 console.log(radix.get('Jane'))
 console.log(radix.get('JavaScript'))
 console.log(radix.get('Java'))
 console.log(radix.get('Ja'))
+console.log(radix.delete('Java'))
+console.log(radix.get('Java'))
+console.log(radix.get('JavaScript'))
+
+console.log(JSON.stringify(radix, null, 2))
