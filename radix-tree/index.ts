@@ -244,7 +244,29 @@ export class RadixTree<TValue> {
   }
 
   has(key: string): boolean {
-    throw new Error('Method not implemented.')
+    let n: RadixNode | null = this.root
+    let search = key
+
+    for (;;) {
+      if (search.length === 0) {
+        if (n.isLeaf()) {
+          return true
+        }
+        break
+      }
+      n = n!.getEdge(search.charAt(0))
+      if (n === null) {
+        break
+      }
+
+      if (hasPrefix(search, n.prefix)) {
+        search = search.slice(n.prefix.length)
+      } else {
+        break
+      }
+    }
+
+    return false
   }
   longestPrefix(key: string): string {
     throw new Error('Method not implemented.')
@@ -265,5 +287,9 @@ console.log(radix.get('Ja'))
 console.log(radix.delete('Java'))
 console.log(radix.get('Java'))
 console.log(radix.get('JavaScript'))
+console.log(radix.has('Java'))
+console.log(radix.has('JavaScript'))
+console.log(radix.delete('Jane'))
+console.log(radix.has('Jane'))
 
 console.log(JSON.stringify(radix, null, 2))
