@@ -297,6 +297,10 @@ export class RadixTree<TValue> {
     }
   }
 
+  walk(walkFn: WalkFn<TValue>) {
+    this._recursiveWalk(this.root, walkFn)
+  }
+
   private _recursiveWalk(n: RadixNode<TValue>, walkFn: WalkFn<TValue>): boolean {
     if (n.isLeaf() && walkFn(n.leaf!.key, n.leaf!.value)) {
       return true
@@ -328,7 +332,7 @@ console.log(radix.has('JavaScript'))
 // console.log(radix.delete('Jane'))
 console.log(radix.has('Jane'))
 
-radix.walkPrefix('Jav', (key, value) => {
+radix.walk((key, value) => {
   console.log({ key, value })
   return false
 })
