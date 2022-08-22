@@ -1,5 +1,7 @@
 import { hasPrefix, longestCommonPrefix, search } from './utils'
 
+export type WalkFn<TValue> = (key: string, value: TValue) => boolean
+
 export class LeafNode<TValue = any> {
   key: string
   value: TValue
@@ -49,7 +51,7 @@ export class RadixNode<TValue = any> {
     }
   }
 
-  getEdge(label: string) {
+  getEdge(label: string): RadixNode<TValue> | null {
     const n = this.edges.length
     const idx = search(n, (i) => this.edges[i].label.localeCompare(label) !== -1)
     if (idx < n && this.edges[idx].label === label) {
@@ -268,11 +270,45 @@ export class RadixTree<TValue> {
 
     return false
   }
-  longestPrefix(key: string): string {
-    throw new Error('Method not implemented.')
+
+  walkPrefix(prefix: string, walkFn: WalkFn<TValue>) {
+    let n: RadixNode | null = this.root
+    let search = prefix
+
+    for (;;) {
+      if (search.length === 0) {
+        this._recursiveWalk(n, walkFn)
+        return
+      }
+
+      n = n!.getEdge(search.charAt(0))
+      if (n === null) {
+        break
+      }
+
+      if (hasPrefix(search, n.prefix)) {
+        search = search.slice(n.prefix.length)
+      } else if (hasPrefix(n.prefix, search)) {
+        this._recursiveWalk(n, walkFn)
+        return
+      } else {
+        break
+      }
+    }
   }
-  keysStartingWith(prefix: string): string[] {
-    throw new Error('Method not implemented.')
+
+  private _recursiveWalk(n: RadixNode<TValue>, walkFn: WalkFn<TValue>): boolean {
+    if (n.isLeaf() && walkFn(n.leaf!.key, n.leaf!.value)) {
+      return true
+    }
+
+    for (let e of n.edges) {
+      if (this._recursiveWalk(e.node!, walkFn)) {
+        return true
+      }
+    }
+
+    return false
   }
 }
 
@@ -284,12 +320,15 @@ console.log(radix.get('Jane'))
 console.log(radix.get('JavaScript'))
 console.log(radix.get('Java'))
 console.log(radix.get('Ja'))
-console.log(radix.delete('Java'))
+// console.log(radix.delete('Java'))
 console.log(radix.get('Java'))
 console.log(radix.get('JavaScript'))
 console.log(radix.has('Java'))
 console.log(radix.has('JavaScript'))
-console.log(radix.delete('Jane'))
+// console.log(radix.delete('Jane'))
 console.log(radix.has('Jane'))
 
-console.log(JSON.stringify(radix, null, 2))
+radix.walkPrefix('Jav', (key, value) => {
+  console.log({ key, value })
+  return false
+})
