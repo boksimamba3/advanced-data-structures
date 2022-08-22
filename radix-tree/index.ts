@@ -315,24 +315,3 @@ export class RadixTree<TValue> {
     return false
   }
 }
-
-const radix = new RadixTree()
-radix.put('Java', 10)
-radix.put('JavaScript', 5)
-radix.put('Jane', 3)
-console.log(radix.get('Jane'))
-console.log(radix.get('JavaScript'))
-console.log(radix.get('Java'))
-console.log(radix.get('Ja'))
-// console.log(radix.delete('Java'))
-console.log(radix.get('Java'))
-console.log(radix.get('JavaScript'))
-console.log(radix.has('Java'))
-console.log(radix.has('JavaScript'))
-// console.log(radix.delete('Jane'))
-console.log(radix.has('Jane'))
-
-radix.walk((key, value) => {
-  console.log({ key, value })
-  return false
-})
